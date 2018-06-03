@@ -37,6 +37,7 @@ export default class RangeDatepicker extends Component {
 	}
 
 	static defaultProps = {
+        width: DEVICE_WIDTH,
 		initialMonth: '',
 		dayHeadings: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
 		maxMonth: 12,
@@ -49,7 +50,7 @@ export default class RangeDatepicker extends Component {
 		onSelect: () => {},
 		onConfirm: () => {},
 		placeHolderStart: 'Start Date',
-		placeHolderUntil: 'Until Date',
+		placeHolderUntil: 'End Date',
 		selectedBackgroundColor: 'green',
 		selectedTextColor: 'white',
 		todayColor: 'green',
@@ -64,12 +65,13 @@ export default class RangeDatepicker extends Component {
 
 
 	static propTypes = {
+        width: PropTypes.number,
 		initialMonth: PropTypes.string,
 		dayHeadings: PropTypes.arrayOf(PropTypes.string),
 		availableDates: PropTypes.arrayOf(PropTypes.string),
 		maxMonth: PropTypes.number,
 		buttonColor: PropTypes.string,
-		buttonContainerStyle: PropTypes.object,
+		buttonContainerStyle: PropTypes.number,
 		startDate: PropTypes.string,
 		untilDate: PropTypes.string,
 		minDate: PropTypes.string,
@@ -174,6 +176,7 @@ export default class RangeDatepicker extends Component {
 	handleRenderRow(month) {
 		const { selectedBackgroundColor, selectedTextColor, todayColor, ignoreMinDate, minDate, maxDate } = this.props;
 		let { availableDates, startDate, untilDate } = this.state;
+        let dayWidth = Math.floor(this.props.width / 7);
 
 
 
@@ -193,7 +196,7 @@ export default class RangeDatepicker extends Component {
 				minDate={minDate ? moment(minDate, 'YYYYMMDD') : minDate}
 				maxDate={maxDate ? moment(maxDate, 'YYYYMMDD') : maxDate}
 				ignoreMinDate={ignoreMinDate}
-				dayProps={{selectedBackgroundColor, selectedTextColor, todayColor}}
+				dayProps={{selectedBackgroundColor, selectedTextColor, todayColor, dayWidth}}
 				month={month} />
 		)
 	}
@@ -217,7 +220,7 @@ export default class RangeDatepicker extends Component {
 					}
 					<View style={{ flexDirection: 'row', justifyContent: "space-between", paddingHorizontal: 20, paddingBottom: 5, alignItems: 'center'}}>
 						<View style={{flex: 1}}>
-							<Text style={{fontSize: 34, color: '#666'}}>
+							<Text style={{fontSize: 28, color: '#666'}}>
 								{ this.state.startDate ? moment(this.state.startDate).format("MMM DD YYYY") : this.props.placeHolderStart}
 							</Text>
 						</View>
@@ -229,7 +232,7 @@ export default class RangeDatepicker extends Component {
 						</View>
 
 						<View style={{flex: 1}}>
-							<Text style={{fontSize: 34, color: '#666', textAlign: 'right'}}>
+							<Text style={{fontSize: 28, color: '#666', textAlign: 'right'}}>
 								{ this.state.untilDate ? moment(this.state.untilDate).format("MMM DD YYYY") : this.props.placeHolderUntil}
 							</Text>
 						</View>
@@ -243,18 +246,20 @@ export default class RangeDatepicker extends Component {
 					<View style={styles.dayHeader}>
 						{
 							this.props.dayHeadings.map((day, i) => {
-								return (<Text style={{width: DEVICE_WIDTH / 7, textAlign: 'center'}} key={i}>{day}</Text>)
+								return (<Text style={{width: Math.floor(this.props.width / 7), textAlign: 'center'}} key={i}>{day}</Text>)
 							})
 						}
 					</View>
-					<ListView
-			            dataSource={monthStack}
-			            renderRow={this.handleRenderRow}
-			            initialListSize={1}
-			            showsVerticalScrollIndicator={false} />
+                    <View style={{height: this.props.width}}>
+    					<ListView
+    			            dataSource={monthStack}
+    			            renderRow={this.handleRenderRow}
+    			            initialListSize={1}
+    			            showsVerticalScrollIndicator={false} />
+                    </View>
 					<View style={[styles.buttonWrapper, this.props.buttonContainerStyle]}>
 						<Button
-							title="Select Date" 
+							title="Select" 
 							onPress={this.handleConfirmDate}
 							color={this.props.buttonColor} />
 					</View>
@@ -271,11 +276,7 @@ const styles = StyleSheet.create({
 		paddingTop: 10,
 	},
 	buttonWrapper : {
-		paddingVertical: 10, 
-		paddingHorizontal: 15, 
-		backgroundColor: 'white', 
-		borderTopWidth: 1, 
-		borderColor: '#ccc',
-		alignItems: 'stretch'
+		alignItems: 'center',
+        justifyContent: 'center'
 	},
 });
